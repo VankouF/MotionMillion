@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+
+  <meta name="description" content="Go to Zero: Towards Zero-shot Motion Generation with Million-scale Data">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="keywords" content="CANOR, Computer Vision, 3D Vision, 4D Vision, Object Rigging, Deformation Representation">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>
+    Go to Zero: Towards Zero-shot Motion Generation with Million-scale Data
+  </title>
+
+  <meta name="msapplication-TileColor" content="#FFFFFF">
+
+  <link rel="icon" href="https://www.guangzhaohe.com/canor/assets/images/chart-bubble.svg" type="image/svg+xml">
+
+  <link href="motionmillion_files/css.css" rel="stylesheet">
+
+  <!-- <link href="https://cdn.jsdelivr.net/npm/modern-normalize@3.0.1/modern-normalize.min.css" rel="stylesheet" /> -->
+  <link href="motionmillion_files/tabler-icons-outline.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="motionmillion_files/bulma.min.css">
+  <link rel="stylesheet" href="motionmillion_files/bulma-carousel.min.css">
+  <link rel="stylesheet" href="motionmillion_files/bulma-slider.min.css">
+  <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css"> -->
+  <link rel="stylesheet" href="motionmillion_files/index.css">
+  <link rel="stylesheet" href="motionmillion_files/jquery-ui.css">
+  <link rel="stylesheet" href="motionmillion_files/style.css">
+
+  <!-- add single video -->
+  <link rel="stylesheet" href="./css/twentytwenty.css">
+  <script src="./js/jquery-1.12.4.min.js"></script>
+  <script src="./js/jquery.event.move.min.js"></script>
+  <script src="./js/jquery.twentytwenty.js"></script>
+  <script src="./js/twentytwenty-init.js"></script>
+  <script src="./js/image-preloader.js"></script>
+
+  <script src="motionmillion_files/bulma-carousel.min.js"></script><style type="text/css">* {-webkit-user-select: text !important;-moz-user-select: text !important;-ms-user-select: text !important;user-select: text !important;}</style><style type="text/css">* {-webkit-user-select: text !important;-moz-user-select: text !important;-ms-user-select: text !important;user-select: text !important;}</style>
+  <script src="motionmillion_files/bulma-slider.min.js"></script>
+  <script src="motionmillion_files/index.js"></script>
+  <script src="motionmillion_files/select.js"></script>
+  <script src="motionmillion_files/jquery-3.7.1.min.js"></script>
+  <script src="motionmillion_files/jquery-ui.min.js"></script>
+  
+  <!-- import { unzipSync, strFromU8 } from 'https://cdn.jsdelivr.net/npm/fflate@0.8.1/esm/index.js'; -->
+  <script type="module" src="motionmillion_files/index_002.js"></script>
+
+  <!-- <script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@latest/dist/model-viewer.js"></script> -->
+  <!-- <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script> -->
+  <!-- <script nomodule src="https://unpkg.com/@google/model-viewer/dist/model-viewer-legacy.js"></script> -->
+  <script type="module" src="motionmillion_files/model-viewer.min.js"></script>
+<style>
+  @import url("moz-extension://21cab2b0-d1d2-46cf-85e3-f7ca7c6dad94/public/styles/font-face.css?t=1751522006010");
+  @import url("moz-extension://21cab2b0-d1d2-46cf-85e3-f7ca7c6dad94/public/styles/animate.css?t=1751522006010");
+  
+
+  .prompt-wrap {
+    position: relative;
+  }
+  @media (hover: hover) {
+
+    .prompt-wrap:hover .prompt,
+    .full-screen-wrap:hover .full-screen-button {
+        opacity: 1;
+        pointer-events: all;
+    }
+
+    #contributors a:hover {
+        background-color: #222;
+    }
+  }
+
+  /* 确保图片加载前就预留空间 */
+  .prompt-wrap.full-screen-wrap .twentytwenty-container {
+    width: 100%;
+    position: relative;
+  }
+
+  .prompt {
+      max-width: calc(100% - 20px);
+      position: absolute;
+      background: rgba(0, 0, 0, 0.5);
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 14px;
+      backdrop-filter: blur(10px);
+      bottom: 80px;
+      left: 10px;
+      padding: 5px 10px;
+      border-radius: 15px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s;
+      box-sizing: border-box;
+  }
+  
+  section.portrait .prompt-wrap.full-screen-wrap video {
+    object-fit: cover;
+  }  
+
+  /* Styles for layout in slider */
+  .slider-container_v1 {
+    position: relative;
+    display: flex;
+    align-items: center;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0 auto;
+    overflow: visible;
+    height: auto;
+  }
+
+  .slider-track {
+    display: flex;
+    transition: transform 0.5s ease;
+    width: 100%;
+  }
+
+  .slider-group {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(2, auto);
+    gap: 20px;
+    width: 100%;
+    flex-shrink: 0;
+    padding: 0 10px;
+    overflow: visible;
+  }
+
+  @media (max-width: 768px) {
+    .slider-group {
+        grid-template-columns: repeat(2, auto);
+        grid-template-rows: repeat(4, 1fr);
+    }
+
+    .slider-nav {
+        padding: 15px 10px;
+        font-size: 18px;
+    }
+  }
+
+  .description {
+    padding: 0 10% 20px 10%;
+    color: #fff;
+    line-height: 25px;
+    font-weight: 300;
+  }
+
+  .slider-nav {
+    background: rgba(0,0,0,0.5);
+    color: white;
+    border: none;
+    padding: 20px 15px;
+    cursor: pointer;
+    font-size: 24px;
+    z-index: 10;
+    border-radius: 4px;
+    transition: background 0.3s;
+  }
+
+  .slider-nav:hover {
+    background: rgba(0,0,0,0.8);
+  }
+
+
+
+</style></head>
+
+<body>
+
+  <div class="scroll-container">
+
+    <div class="section-nav">
+      <a href="#cover" class="dot active" title="Cover"></a>
+      <a href="#intro" class="dot" title="Introduction"></a>
+      <a href="#generation-results" class="dot" title="Generation Gallery"></a>
+      <a href="#youtube" class="dot" title="YouTube Video"></a>
+      <a href="#miscellaneous" class="dot" title="Miscellaneous"></a>
+    </div>
+
+    <!-- For PC and desktop devices -->
+    <!-- <section class="hero hero-cover-desktop is-link is-hidden-touch is-fullheight video" style="overflow: hidden; position:relative;" id="cover"> -->
+    <div class="section hero  is-link is-fullheight video" style="overflow: hidden; position:relative;" id="cover">
+
+      <!-- Teaser video -->
+      <div class="hero-video" style="height: 100%; width: 177.77777778vh; min-width: 100%;min-height: 56.25vw; background-color: black; left: unset; right: unset; display: unset;">
+        <video playsinline="" autoplay="autoplay" muted="muted" loop="">
+          <!-- <source src="assets/videos/teaser_video_fade.mp4" type="video/mp4"> -->
+          <source src="motionmillion_files/videos/teaser_video_slide/teaser_capture.mp4" type="video/mp4">
+        </video>
+      </div>
+
+      <div class="overlay"></div>
+
+      <div id="top-bar" class="hero-head is-hidden-touch" style="position: fixed; top: 0; right: 0; z-index: 1000;">
+        <header class="navbar is-hidden-touch">
+          <div class="container is-size-5" style="margin-right:10px;">
+            <div class="navbar-menu">
+              <div class="navbar-end">
+
+                <a class="navbar-item pl-4 pr-4" href="" style="font-size: 1.4vw;">
+                  <i class="ti ti-file" style="margin-right: 0.3vw;"></i>
+                  <span class="myfont">Paper</span>
+                </a>
+
+                <a class="navbar-item pl-4 pr-4" href="" style="font-size: 1.4vw;">
+                  <i class="ti ti-link" style="margin-right: 0.3vw;"></i>
+                  <span class="myfont">arXiv</span>
+                </a>
+                
+                <a class="navbar-item pl-4 pr-4" href="" style="font-size: 1.4vw;">
+                  <i class="ti ti-link" style="margin-right: 0.3vw;"></i>
+                  <span class="myfont">Data</span>
+                </a>
+
+                <a class="navbar-item pl-4 pr-4" href="https://github.com/VankouF/MotionMillion-Codes" style="font-size: 1.4vw;">
+                  <i class="ti ti-code" style="margin-right: 0.3vw;;"></i>
+                  <span class="myfont">Code</span>
+                </a>
+
+                <a class="navbar-item pl-4 pr-4" href="https://youtu.be/5vfhTok6Mt0" style="font-size: 1.4vw;">
+                  <i class="ti ti-video" style="margin-right: 0.3vw;"></i>
+                  <span class="myfont">YouTube</span>
+                </a>
+
+                <a class="navbar-item pl-4 pr-4" href="" style="font-size: 1.4vw;">
+                  <i class="ti ti-video" style="margin-right: 0.3vw;"></i>
+                  <span class="myfont">BiliBili</span>
+                </a>
+
+              </div>
+            </div>
+          </div>
+        </header>
+      </div>
+
+      <!--  Hero content: will be in the middle -->
+      <div class="hero-body" style="max-width: 100%; width: 100%;">
+        <div class="container has-text-centered" style="max-width: 100%; width: 100%;">
+          <!-- <h1 class="title is-1 publication-title is-size-1-mobile" style="font-size: 7vw; line-height: 1.1;">
+            <i id="changing-icon" class="myfont"></i>
+            <span style="
+              background: linear-gradient(90deg, #ff6ec4, #7873f5);
+              -webkit-background-clip: text;
+              -webkit-text-fill-color: transparent;
+              display: inline-block;
+              padding-bottom: 0.1em;
+              white-space: nowrap;">
+              Category-Agnostic
+            </span><br>
+            <span style="white-space: nowrap;">Neural Object Rigging</span>
+          </h1> -->
+          
+          <h1 class="title is-1 publication-title is-size-1-mobile" style="font-size: 7vw; line-height: 1.1; text-align: center; width: 100%; max-width: 100%;">
+            <div style="display: inline-block;">
+              <i id="changing-icon" class="ti ti-pig"></i>
+              <span style="
+                background: linear-gradient(90deg, #ff6ec4, #7873f5);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                display: inline-block;
+                padding-bottom: 0.1em;">
+                Go to Zero:
+              </span><br>
+              <span>Towards Zero-shot Motion Generation with Million-scale Data</span>
+            </div>
+          </h1>
+
+          <h1 class="subtitle is-1 is-size-4-mobile publication-title myfont" style="padding-top: 10vh; font-size: 2.5vw;">
+            ICCV 2025
+          </h1>
+          <h1 class="is-2 is-size-4-mobile" style="font-size: 2.5vw; opacity: 100%;">
+            <span class="myfont">
+              <a href="https://vankouf.github.io/">Ke Fan<sup class="is-size-6-mobile"><img src="motionmillion_files/logos/sjtu.svg" style="width: 2vw; height: 2vw;"></sup></a>, 
+            </span> 
+            <span class="myfont">
+              <a href="https://shunlinlu.github.io/">Shunlin Lu<sup class="is-size-6-mobile"><img src="motionmillion_files/logos/CUHK.png" style="width: 2vw; height: 2vw;"></sup></a>, 
+            </span> 
+            <span class="myfont">
+              <a href="https://jixiii.github.io/">Minyue Dai<sup class="is-size-6-mobile"><img src="motionmillion_files/logos/fdu.svg" style="width: 2vw; height: 2vw;"></sup></a>, 
+            </span>
+            <span class="myfont">
+              <a href="https://ingrid789.github.io/IngridYu/">Runyi Yu<sup class="is-size-6-mobile"><img src="motionmillion_files/logos/HKUST.svg" style="width: 2vw; height: 2vw;"></sup></a>,
+            </span>
+            <span class="myfont">
+              <a href="https://li-xingxiao.github.io/homepage/">Lixing Xiao<sup class="is-size-6-mobile"><img src="motionmillion_files/logos/zju.svg" style="width: 2vw; height: 2vw;"></sup></a>,
+            </span>
+            <span class="myfont">
+              <a href="https://frank-zy-dou.github.io/">Zhiyang Dou<sup class="is-size-6-mobile"><img src="motionmillion_files/logos/hku.png" style="width: 2vw; height: 2vw;"></sup></a>,
+            </span>
+            <span class="myfont">
+              <a href="https://jtdong.com/">Junting Dong<sup class="is-size-6-mobile"><img src="motionmillion_files/logos/shlab.png" style="width: 2vw; height: 2vw;"></sup></a>,
+            </span>
+            <span class="myfont">
+              <a href="https://scholar.google.com/citations?user=yd58y_0AAAAJ&hl=zh-CN">Lizhuang Ma<sup class="is-size-6-mobile"><img src="motionmillion_files/logos/sjtu.svg" style="width: 2vw; height: 2vw;"><img src="motionmillion_files/logos/ecnu.svg" style="width: 2vw; height: 2vw;"></sup></a>
+            </span>
+            <span class="myfont">
+              <a href="https://wangjingbo1219.github.io/">Jingbo Wang<sup class="is-size-6-mobile"><img src="motionmillion_files/logos/shlab.png" style="width: 2vw; height: 2vw;"></sup></a>
+            </span>
+          </h1>
+          <h1 class="is-5 is-size-5-mobile myfont" style="font-size: 1.5vw; opacity: 100%;">
+            (* Corresponding Author)
+          </h1>
+        </div>
+      </div>
+
+      <!-- Hero footer: will stick at the bottom -->
+      <!-- <div class="hero-foot is-hidden-mobile myfont" style="bottom: 0;">
+        <nav class="tabs is-boxed is-fullwidth is-size-5">
+          <ul>
+            <li><a href="#intro">Introduction</a></li>
+            <li><a href="#inter">Interactive Results</a></li>
+            <li><a href="#clay">"Clay-Monster"</a></li>
+            <li><a href="#approach">Approach</a></li>
+          </ul>
+        </nav>
+      </div> -->
+
+      <div id="menu-footer" class="hero-foot is-hidden-mobile myfont" style="position: fixed; bottom: 0; left: 0; width: 100%; z-index: 10;">
+        <nav class="tabs is-boxed is-fullwidth is-size-5" style="font-size: 2vw">
+          <ul>
+            <li><a href="#intro">Introduction</a></li>
+            <li><a href="#generation-results">Generation Gallery</a></li>
+            <li><a href="#youtube">YouTube Video</a></li>
+            <li><a href="#miscellaneous">Miscellaneous</a></li>
+          </ul>
+        </nav>
+      </div>
+
+    </div>
+
+
+
+    <!-- Intro -->
+    <div class="section is-medium myfont" id="intro">
+      <!-- Title -->
+      <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; max-height: 10vh;">
+        <div class="container">
+          <h1 class="title is-size-1-mobile text-white" style="font-size: 3vw;">
+            Introduction
+          </h1>
+        </div>
+      </div>
+
+      <br>
+
+      <div class="content is-size-6-mobile" style="font-size: 1.3vw; width: 80%; text-align: center;">
+        <!-- Our world is populated by diverse, ever-moving beings — not just humans, but also pets, wild animals, and other dynamic entities that can move and deform. -->
+        Generating diverse and natural human motion sequences based on textual descriptions constitutes a fundamental and challenging research area within the domains of computer vision, graphics, and robotics. Despite significant advancements in this field, current methodologies often face challenges regarding zero-shot generalization capabilities, largely attributable to the limited size of training datasets. Moreover, the lack of a comprehensive evaluation framework impedes the advancement of this task by failing to identify directions for improvement. In this work, we aim to push text-to-motion into a new era, that is, to achieve the generalization ability of zero-shot. To this end, firstly, we develop an efficient annotation pipeline and introduce MotionMillion—the largest human motion dataset to date, featuring over 2,000 hours and 2 million high-quality motion sequences. Additionally, we propose MotionMillion-Eval, the most comprehensive benchmark for evaluating zero-shot motion generation. Leveraging a scalable architecture, we scale our model to 7B parameters and validate its performance on MotionMillion-Eval. Our results demonstrate strong generalization to out-of-domain and complex compositional motions, marking a significant step toward zero-shot human motion generation.
+      </div>
+
+      <div style="text-align: center; margin-top: 0vh;">
+        <img src="motionmillion_files/teaser.jpg" alt="Approach Image" style="max-width: 80%; height: auto; filter: brightness(90%);">
+      </div>
+    </div>
+
+    <!-- Generation Gallery -->
+    <div class="section myfont"  id="generation-results">
+
+      <!-- <div id="single-action"> -->
+      <!-- <div class="title" style="font-size: 30px;">
+          Single-action Comparison
+      </div>
+      <div class="description">
+          We compared <strong>control accuracy</strong> under single-action control with other interactive video methods in multiple game scenarios and art styles.
+      </div> -->
+      
+      <br>
+      <div class="slider-container_v1">
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; max-height: 10vh;">
+          <div class="container">
+            <h1 class="title text-white" style="font-size: 3vw;">
+              Generation Gallery
+            </h1>
+            <br>
+          </div>
+        </div>
+          <button class="slider-nav prev" onclick="slide(-1)">❮</button>
+          <div class="slider-wrapper">
+              <div class="slider-track" style="transform: translateX(-400%); transition: transform 0.5s;">
+                  <!-- Group 1 (First 6 videos) -->
+                  <div class="slider-group">
+                      <div class="prompt-wrap full-screen-wrap">
+                        <video muted="" autoplay="" loop="" playsinline="" width="400" height="300"><source src="./motionmillion_files/videos/motions/1.mp4" type="video/mp4"></video>
+                        <div class="prompt">An old man is slowly walking with a cane in the park.</div>
+                      </div>
+                      <div class="prompt-wrap full-screen-wrap">
+                          <video muted="" autoplay="" loop="" playsinline="" width="400" height="300"><source src="./motionmillion_files/videos/motions/2.mp4" type="video/mp4"></video>
+                          <div class="prompt">A skilled surfer is navigating a massive swell.</div>
+                      </div>
+                      <div class="prompt-wrap full-screen-wrap">
+                        <video muted="" autoplay="" loop="" playsinline="" width="400" height="300"><source src="./motionmillion_files/videos/motions/3.mp4" type="video/mp4"></video>
+                        <div class="prompt">A person walks like a cat.</div>
+                      </div>
+                      <div class="prompt-wrap full-screen-wrap">
+                        <video muted="" autoplay="" loop="" playsinline="" width="400" height="300"><source src="./motionmillion_files/videos/motions/4.mp4" type="video/mp4"></video>
+                        <div class="prompt">A man executes a dynamic sword-fighting routine, lunging forward, pivoting, and slashing downward, then spinning and kicking with agility and strength.</div>
+                      </div>
+                      <div class="prompt-wrap full-screen-wrap">
+                        <video muted="" autoplay="" loop="" playsinline="" width="400" height="300"><source src="./motionmillion_files/videos/motions/5.mp4" type="video/mp4"></video>
+                        <div class="prompt">A furious swordsman grips his blade tightly, stomps forward with an angry roar, then slashes diagonally at an invisible foe</div>
+                      </div>
+                      <div class="prompt-wrap full-screen-wrap">
+                        <video muted="" autoplay="" loop="" playsinline="" width="400" height="300"><source src="./motionmillion_files/videos/motions/6.mp4" type="video/mp4"></video>
+                        <div class="prompt">The emaciated woman sat on the floor, her hands wrapped around her knees as she trembled, her head buried in her arms, sobbing, her body curled up.</div>
+                      </div>
+                      <div class="prompt-wrap full-screen-wrap">
+                        <video muted="" autoplay="" loop="" playsinline="" width="400" height="300"><source src="./motionmillion_files/videos/motions/7.mp4" type="video/mp4"></video>
+                        <div class="prompt">The person is performing a dynamic dance, shifting weight between feet with quick steps and arm movements.</div>
+                      </div>
+                      <div class="prompt-wrap full-screen-wrap">
+                        <video muted="" autoplay="" loop="" playsinline="" width="400" height="300"><source src="./motionmillion_files/videos/motions/8.mp4" type="video/mp4"></video>
+                        <div class="prompt">A person performs an energetic dance, showcasing fluid movements, confident gestures, and agile steps.</div>
+                      </div>
+                      <div class="prompt-wrap full-screen-wrap">
+                        <video muted="" autoplay="" loop="" playsinline="" width="100" height="100"><source src="./motionmillion_files/videos/motions/9.mp4" type="video/mp4"></video>
+                        <div class="prompt">With a katana in hand, the person freezes, then swiftly rotates their body while raising the sword before delivering a swift slash, their fluid motion and intense focus evident throughout the movement.</div>
+                      </div>
+                  </div>
+                  <div class="slider-group">
+                    <div class="prompt-wrap full-screen-wrap">
+                      <video muted="" autoplay="" loop="" playsinline=""><source src="./motionmillion_files/videos/motions/9.mp4" type="video/mp4"></video>
+                      <div class="prompt">With a katana in hand, the person freezes, then swiftly rotates their body while raising the sword before delivering a swift slash, their fluid motion and intense focus evident throughout the movement.</div>
+                    </div>
+                    <div class="prompt-wrap full-screen-wrap">
+                        <video muted="" autoplay="" loop="" playsinline=""><source src="./motionmillion_files/videos/motions/10.mp4" type="video/mp4"></video>
+                        <div class="prompt">A woman practicing yoga, gracefully transitioning from a downward dog position to a cobra pose</div>
+                    </div>
+                    <div class="prompt-wrap full-screen-wrap">
+                      <video muted="" autoplay="" loop="" playsinline=""><source src="./motionmillion_files/videos/motions/11.mp4" type="video/mp4"></video>
+                      <div class="prompt">A man walks in a dog pose.</div>
+                  </div>
+                    <div class="prompt-wrap full-screen-wrap">
+                      <video muted="" autoplay="" loop="" playsinline=""><source src="./motionmillion_files/videos/motions/12.mp4" type="video/mp4"></video>
+                      <div class="prompt">A person stands still, then swings a bat with energy and focus, simulating a hit while shifting weight onto the back foot.</div>
+                  </div>
+                    <div class="prompt-wrap full-screen-wrap">
+                      <video muted="" autoplay="" loop="" playsinline=""><source src="./motionmillion_files/videos/motions/13.mp4" type="video/mp4"></video>
+                      <div class="prompt">The man performs a dynamic sword-fighting routine involving a lunging step, pivot, and swift slash, followed by a spin, swing, and display of agility and strength, highlighting his focus and determination.</div>
+                    </div>
+                    <div class="prompt-wrap full-screen-wrap">
+                        <video muted="" autoplay="" loop="" playsinline=""><source src="./motionmillion_files/videos/motions/14.mp4" type="video/mp4"></video>
+                        <div class="prompt">A zombie slowly dragging its feet forward, arms outstretched, letting out a low groan</div>
+                    </div>
+                    <div class="prompt-wrap full-screen-wrap">
+                      <video muted="" autoplay="" loop="" playsinline=""><source src="./motionmillion_files/videos/motions/15.mp4" type="video/mp4"></video>
+                      <div class="prompt">The person is swinging a sword in a choreographed motion. He first lifts the sword behind his back, then steps forward while bringing the sword down in a wide arc, shifting his weight to the front foot and finishing in a low stance, showing focus and strong intention in his movements.</div>
+                  </div>
+                    <div class="prompt-wrap full-screen-wrap">
+                      <video muted="" autoplay="" loop="" playsinline=""><source src="./motionmillion_files/videos/motions/16.mp4" type="video/mp4"></video>
+                      <div class="prompt">A dancer is performing a turn on the spot, first raising one arm with a graceful motion, then shifting weight to one side while the other arm moves out. She rotates smoothly, keeping her legs stable and extending her arms outward, expressing joy and light-heartedness in her movements</div>
+                  </div>
+                </div>
+          </div>
+        </div>
+        <button class="slider-nav next" onclick="slide(1)">❯</button>
+    </div>
+    <!-- </div> -->
+    
+    </div>
+
+    <div class="section is-medium myfont" id="youtube">
+      <!-- Title -->
+      <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; max-height: 10vh;">
+        <div class="container">
+          <h1 class="title is-1 is-size-1-mobile text-white" style="font-size: 3vw;">
+            YouTube Video
+          </h1>
+        </div>
+        <br>
+        <div class="container">
+          <div class="video_container">
+            <iframe width="1120" height="700" src="https://www.youtube.com/embed/5vfhTok6Mt0?si=EK7uUYJP3CNPNXsK" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section is-medium myfont" id="miscellaneous">
+      <!-- Title -->
+      <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; max-height: 10vh;">
+        <div class="container">
+          <h1 class="title is-1 is-size-1-mobile text-white" style="font-size: 3vw;">
+            Miscellaneous
+          </h1>
+        </div>
+      </div>
+
+      <br>
+      <br>
+
+      <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; max-height: 10vh;">
+      <div class="container">
+        <h1 class="title is-1 is-hidden-touch text-white width: 90%;" style="font-size: 3vh;">
+          Bibtex
+        </h1>
+      </div>
+    </div>
+
+    <br>
+
+    <div style="width: 80%; display: flex; flex-direction: column; align-items: center;">
+      <div class="columns is-centered is-hidden-touch">
+        <div class="content" style="margin-top: 10pt; width: 100%;">
+          <div style="
+            border-radius: 12px;
+            background-color: #1e1e1e;
+            padding: 5px;
+            overflow-x: auto;
+            width: 100%;
+          ">
+            <pre class="" style="
+              margin: 0;
+              background: transparent;
+              border-radius: 12px;
+            "><code style="color: #e0e0e0; background: transparent;">@InProceedings{Fan_2025_Arxiv,
+            author    = {Fan, Ke and Lu, Shunlin and Dai, Minyue and Yu, Runyi and Xiao, Lixing and Dou, Zhiyang and Dong, Junting and Ma, Lizhuang and Wang, Jingbo},
+            title     = {Go to Zero: Towards Zero-shot Motion Generation with Million-scale Data},
+            booktitle = {Arxiv},
+            month     = {July},
+            year      = {2025},
+            pages     = {}
+          }</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <br>
+    <br>
+
+      <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; max-height: 10vh;">
+      <div class="container">
+        <h1 class="title is-1 is-size-2-mobile text-white" style="font-size: 3vh;">
+          Acknowledgements
+        </h1>
+      </div>
+    </div>
+
+    <br>
+
+    <footer class="footer">
+      <div class="container">
+        <div class="columns is-centered">
+          <div class="column is-8">
+            <div class="content">
+              <p>
+                Website template modified from <a href="https://www.guangzhaohe.com/canor/">CANOR</a>,<a href="https://hunyuan-gamecraft.github.io/">Hunyuan-GAMECRAFT</a>, <a href="https://chen-geng.com/rose4d/">Birth and Death of a Rose</a>, <a href="https://cut3r.github.io/">CUT3R</a>, <a href="https://nerfies.github.io/">NeRFies</a>, <a href="https://www.cs.columbia.edu/~huy/scalingup/">Scaling Up Distilling Down</a>, and <a href="https://umi-on-legs.github.io/">UMI on Legs</a>.
+              </p>
+              <p>
+                This website is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
+              </p>
+              <p>
+                This means you are free to borrow and modify the <a href="https://github.com/nerfies/nerfies.github.io">source code</a> of this website as long as you link back to the <a href="https://nerfies.github.io/">NeRFies</a> page in the footer.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    </div>
+
+  </div>  
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      const sliders = document.querySelectorAll('.slider-container_v1');
+      
+      sliders.forEach(slider => {
+          const track = slider.querySelector('.slider-track');
+          const groups = slider.querySelectorAll('.slider-group');
+          const prevBtn = slider.querySelector('.slider-nav.prev');
+          const nextBtn = slider.querySelector('.slider-nav.next');
+          
+          let currentGroup = 0;
+          const totalGroups = groups.length;
+          
+          // Clone first and last groups for seamless looping
+          const firstClone = groups[0].cloneNode(true);
+          const lastClone = groups[totalGroups-1].cloneNode(true);
+          track.insertBefore(lastClone, groups[0]);
+          track.appendChild(firstClone);
+          
+          // Update total groups count
+          const extendedGroups = slider.querySelectorAll('.slider-group');
+          
+          // Set initial position (showing the real first group)
+          track.style.transform = 'translateX(-100%)';
+          
+          function slide(direction) {
+              // Always animate transitions
+              track.style.transition = 'transform 0.5s ease';
+              
+              currentGroup += direction;
+              const translateX = -(currentGroup + 1) * 100;
+              track.style.transform = `translateX(${translateX}%)`;
+          }
+          
+          // Handle transition end for infinite looping
+          track.addEventListener('transitionend', function() {
+              // If we've scrolled past the clone of the last group
+              if (currentGroup >= totalGroups) {
+                  track.style.transition = 'none';
+                  currentGroup = 0;
+                  track.style.transform = 'translateX(-100%)';
+                  void track.offsetWidth; // Force reflow
+              }
+              // If we've scrolled before the clone of the first group
+              else if (currentGroup < 0) {
+                  track.style.transition = 'none';
+                  currentGroup = totalGroups - 1;
+                  track.style.transform = `translateX(${-(currentGroup + 1) * 100}%)`;
+                  void track.offsetWidth; // Force reflow
+              }
+              
+              // Update active classes for indicators if needed
+              updateActiveGroups();
+          });
+          
+          function updateActiveGroups() {
+              // Remove active class from all groups
+              extendedGroups.forEach(group => group.classList.remove('active'));
+              
+              // Calculate the real group index (accounting for clones)
+              let realIndex = currentGroup;
+              if (currentGroup < 0) realIndex = totalGroups - 1;
+              if (currentGroup >= totalGroups) realIndex = 0;
+              
+              // Set active class to current group
+              extendedGroups[realIndex + 1].classList.add('active');
+          }
+          
+          // Initialize
+          updateActiveGroups();
+          prevBtn.addEventListener('click', () => slide(-1));
+          nextBtn.addEventListener('click', () => slide(1));
+          
+          // Auto-advance changed to 10 seconds (10000ms)
+          let autoSlideInterval = setInterval(() => slide(1), 10000);
+          
+          // Changed to monitor entire slider-container instead of just wrapper
+          slider.addEventListener('mouseenter', () => {
+              clearInterval(autoSlideInterval);
+          });
+          
+          slider.addEventListener('mouseleave', () => {
+              autoSlideInterval = setInterval(() => slide(1), 10000);
+          });
+      });
+  });
+</script>
+
+</body></html>
